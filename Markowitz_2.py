@@ -47,6 +47,9 @@ df = Bdf.loc["2019-01-01":"2024-04-01"]
 Strategy Creation
 
 Create your own strategy, you can add parameter but please remain "price" and "exclude" unchanged
+goals:
+1. Achieve a Sharpe Ratio greater than 1 during the backtest period from 2019 to 2024.
+2. Outperform the SPY’s Sharpe Ratio during the backtest period from 2012 to 2024.
 """
 
 
@@ -74,7 +77,18 @@ class MyPortfolio:
         """
         TODO: Complete Task 4 Below
         """
+        for date in self.price.index:
+            if date >= self.price.index[self.lookback]:
+                # Compute past returns for lookback period
+                past_returns = self.price[assets].loc[
+                    date - pd.DateOffset(days=self.lookback) : date
+                ].pct_change().sum()
+                # Ensure non-negative weights
+                past_returns = past_returns.clip(lower=0)
+                # Normalize weights to sum to 1
+                weights = past_returns / past_returns.sum()
 
+                self.portfolio_weights.loc[date, assets] = weights.values
         """
         TODO: Complete Task 4 Above
         """
